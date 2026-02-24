@@ -31,12 +31,6 @@ Retrieval performance is reported at five distractor pool sizes: **100**, **300*
 | **CF** | Constraint Following | Whether the model adheres to explicit constraints or instructions given by the user. |
 | **EI** | Emotional Intelligence | Whether the model produces emotionally appropriate and empathetic responses. |
 
-### Global Scores
-
-| Column | Description |
-|--------|-------------|
-| **Total Score** | Aggregated score across all four tasks. |
-| **Global (EN / CN)** | Overall quality ratings evaluated in English and Chinese respectively. |
 
 ## Page Navigation
 
