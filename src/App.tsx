@@ -504,28 +504,28 @@ const Task4Chart = ({ data, compact = false }: { data: BenchmarkData[], compact?
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b-2 border-slate-200 dark:border-slate-700">
-                      <th className="px-3 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Model</th>
-                      <th className="px-2 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">PA</th>
-                      <th className="px-2 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">PF</th>
-                      <th className="px-2 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">VRA</th>
-                      <th className="px-2 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">CF</th>
-                      <th className="px-2 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">EI</th>
-                      <th className="px-2 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Avg</th>
+                    <tr className="border-b-2 border-slate-600 bg-slate-900/80">
+                      <th className="px-3 py-3 text-left font-semibold text-white">Model</th>
+                      <th className="px-2 py-3 text-center font-semibold text-slate-300">PA</th>
+                      <th className="px-2 py-3 text-center font-semibold text-slate-300">PF</th>
+                      <th className="px-2 py-3 text-center font-semibold text-slate-300">VRA</th>
+                      <th className="px-2 py-3 text-center font-semibold text-slate-300">CF</th>
+                      <th className="px-2 py-3 text-center font-semibold text-slate-300">EI</th>
+                      <th className="px-2 py-3 text-center font-semibold text-slate-300">Avg</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tbody className="divide-y divide-slate-700/50">
                     {sortedData.map((model, idx) => {
                       const avg = (model.task4.PA + model.task4.PF + model.task4.VRA + model.task4.CF + model.task4.EI) / 5;
                       return (
-                        <tr key={model.model} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <tr key={model.model} className="transition-colors hover:bg-slate-700/30">
                           <td className="px-3 py-3">
                             <div className="flex items-center gap-2">
                               <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                                 idx === 0 ? 'bg-amber-500 text-white' : 
                                 idx === 1 ? 'bg-slate-400 text-white' : 
                                 idx === 2 ? 'bg-orange-600 text-white' : 
-                                'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+                                'bg-slate-600 text-slate-300'
                               }`}>
                                 {idx + 1}
                               </span>
@@ -534,7 +534,7 @@ const Task4Chart = ({ data, compact = false }: { data: BenchmarkData[], compact?
                                   className="h-2.5 w-2.5 shrink-0 rounded-full" 
                                   style={{ backgroundColor: getModelColor(model.model) }}
                                 />
-                                <span className="text-xs font-semibold text-slate-900 dark:text-white">
+                                <span className="text-xs font-semibold text-white">
                                   {model.model}
                                 </span>
                                 {idx === 0 && <span className="text-xs">👑</span>}
@@ -548,8 +548,8 @@ const Task4Chart = ({ data, compact = false }: { data: BenchmarkData[], compact?
                               <td key={dim} className="px-2 py-3 text-center">
                                 <span className={`font-mono text-xs font-semibold ${
                                   isBest 
-                                    ? 'text-amber-600 dark:text-amber-400' 
-                                    : 'text-slate-600 dark:text-slate-400'
+                                    ? 'text-amber-400' 
+                                    : 'text-slate-300'
                                 }`}>
                                   {score.toFixed(3)}
                                 </span>
@@ -560,8 +560,8 @@ const Task4Chart = ({ data, compact = false }: { data: BenchmarkData[], compact?
                           <td className="px-2 py-3 text-center">
                             <span className={`font-mono text-xs font-bold ${
                               idx === 0 
-                                ? 'text-amber-600 dark:text-amber-400' 
-                                : 'text-slate-700 dark:text-slate-300'
+                                ? 'text-amber-400' 
+                                : 'text-slate-300'
                             }`}>
                               {avg.toFixed(3)}
                             </span>
@@ -573,16 +573,16 @@ const Task4Chart = ({ data, compact = false }: { data: BenchmarkData[], compact?
                 </table>
                 
                 {/* Legend */}
-                <div className="mt-6 space-y-2 rounded-lg bg-slate-50 p-4 text-xs dark:bg-slate-800/50">
-                  <div className="font-semibold text-slate-700 dark:text-slate-300">Dimensions:</div>
-                  <div className="grid grid-cols-1 gap-1 text-slate-500 dark:text-slate-400">
+                <div className="mt-6 space-y-2 rounded-lg border border-slate-600/50 bg-slate-800/50 p-4 text-xs">
+                  <div className="font-semibold text-slate-300">Dimensions:</div>
+                  <div className="grid grid-cols-1 gap-1 text-slate-400">
                     <div><strong>PA:</strong> Persona Awareness</div>
                     <div><strong>PF:</strong> Preference Following</div>
                     <div><strong>VRA:</strong> Virtual-Reality Awareness</div>
                     <div><strong>CF:</strong> Consistency/Factuality</div>
                     <div><strong>EI:</strong> Emotional Intelligence</div>
                   </div>
-                  <div className="mt-3 border-t border-slate-200 pt-2 dark:border-slate-700">
+                  <div className="mt-3 border-t border-slate-600/50 pt-2">
                     <span className="text-amber-500">●</span> = Best score in dimension
                   </div>
                 </div>
@@ -790,9 +790,6 @@ const LeaderboardTable = ({ data, compact = false }: { data: BenchmarkData[], co
               <th className="border-l-2 border-slate-600 px-4 py-4 text-center font-bold text-blue-400" style={{ fontSize: '15px' }}>
                 Total<br/>Score
               </th>
-              <th className="border-l-2 border-slate-600 px-4 py-4 text-center font-bold text-white" style={{ fontSize: '15px' }}>
-                Global
-              </th>
             </tr>
             <tr className="border-b border-slate-600 bg-slate-900/60">
               <th className="px-5 py-3"></th>
@@ -815,7 +812,6 @@ const LeaderboardTable = ({ data, compact = false }: { data: BenchmarkData[], co
               ))}
               
               <th className="px-4 py-3"></th>
-              <th className="px-3 py-3 text-center text-xs font-semibold text-slate-300">EN / CN</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700/50">
@@ -909,12 +905,6 @@ const LeaderboardTable = ({ data, compact = false }: { data: BenchmarkData[], co
                       {totalScore.toFixed(3)}
                     </span>
                   </td>
-                  <td className="border-l-2 border-slate-600 px-3 py-4 text-center">
-                    <div className="flex flex-col gap-1">
-                      <span className="font-mono text-xs font-semibold text-slate-300">{row.en.toFixed(2)}</span>
-                      <span className="font-mono text-xs font-semibold text-slate-400">{row.cn.toFixed(2)}</span>
-                    </div>
-                  </td>
                 </motion.tr>
               );
             })}
@@ -939,7 +929,7 @@ const LeaderboardTable = ({ data, compact = false }: { data: BenchmarkData[], co
         <div className="rounded-lg border border-slate-600/50 bg-slate-800/50 p-4">
           <div className="mb-2 font-bold text-blue-400" style={{ fontSize: '14px' }}>Scoring</div>
           <div className="text-xs text-slate-300 leading-relaxed">
-            <strong>Total Score</strong>: Sum of normalized T1-T4 (max 4.00) | <strong>Global</strong>: Overall EN/CN performance scores
+            <strong>Total Score</strong>: Sum of normalized T1-T4 (max 4.00)
           </div>
         </div>
       </div>
@@ -1038,22 +1028,6 @@ const ModelRow = ({ row, index, compact }: { row: BenchmarkData & { totalScore?:
                 </div>
 
                 <div className="space-y-6">
-                  <div>
-                    <h4 className="mb-4 flex items-center gap-2 font-bold text-slate-900 dark:text-white">
-                      <Database className="h-4 w-4 text-purple-500" />
-                      Global Score
-                    </h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="rounded-xl border border-slate-200 p-4 text-center dark:border-slate-800">
-                        <div className="text-xs text-slate-500">English Score</div>
-                        <div className="text-xl font-bold text-slate-900 dark:text-white">{row.en.toFixed(2)}</div>
-                      </div>
-                      <div className="rounded-xl border border-slate-200 p-4 text-center dark:border-slate-800">
-                        <div className="text-xs text-slate-500">Chinese Score</div>
-                        <div className="text-xl font-bold text-slate-900 dark:text-white">{row.cn.toFixed(2)}</div>
-                      </div>
-                    </div>
-                  </div>
                   <div className="rounded-xl bg-blue-600 p-6 text-white">
                     <p className="text-sm font-medium opacity-80">Total Normalized Score</p>
                     <div className="mt-1 text-3xl font-bold">{totalScore.toFixed(3)} / 4.00</div>
