@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Trophy, 
   BarChart3, 
@@ -32,6 +32,18 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import { Task3Chart } from './components/Task3Chart';
+import {
+  DataPipelineFlow,
+  AllTasksOverview,
+  ExtractionDemo,
+  UpdatingDemo,
+  RetrievalDemo,
+  UtilizationDemo,
+  ExtractionMethodology,
+  UpdatingMethodology,
+  RetrievalMethodology,
+  UtilizationMethodology,
+} from './components/about';
 import { 
   BENCHMARK_DATA, 
   getModelColor, 
@@ -45,12 +57,12 @@ import {
 // --- Components ---
 
 const Header = () => {
-  const stats = [
-    { label: 'Evaluated Models', value: '7', icon: Cpu, color: 'text-blue-500' },
-    { label: 'Core Tasks', value: '4', icon: Layers, color: 'text-purple-500' },
-    { label: 'Dialogue Sessions', value: '2.5K', icon: Database, color: 'text-emerald-500' },
-    { label: 'Max Distractors', value: '1000', icon: BrainCircuit, color: 'text-amber-500' },
-  ];
+  // const stats = [
+  //   { label: 'Evaluated Models', value: '7', icon: Cpu, color: 'text-blue-500' },
+  //   { label: 'Core Tasks', value: '4', icon: Layers, color: 'text-purple-500' },
+  //   { label: 'Dialogue Sessions', value: '2.5K', icon: Database, color: 'text-emerald-500' },
+  //   { label: 'Max Distractors', value: '1000', icon: BrainCircuit, color: 'text-amber-500' },
+  // ];
 
   return (
     <header className="relative w-full overflow-hidden bg-slate-950 py-16 text-white">
@@ -90,7 +102,7 @@ const Header = () => {
             AlpsBench assesses the entire lifecycle of personalized memory management across extraction, updating, retrieval, and utilization tasks.
           </motion.p>
 
-          {/* Stats integrated into header */}
+          {/* Stats integrated into header - 暂时注释
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -112,6 +124,7 @@ const Header = () => {
               </div>
             ))}
           </motion.div>
+          */}
         </div>
       </div>
     </header>
@@ -436,7 +449,7 @@ const Task4Chart = ({ data, compact = false }: { data: BenchmarkData[], compact?
   // Full version for dedicated task page
   return (
     <section className="mx-auto w-full max-w-[90rem] px-6">
-      <div className="mb-8 flex items-center gap-2">
+      <div className="mb-8 flex items-center gap-2 text-white">
         <BrainCircuit className="h-6 w-6 text-amber-500" />
         <h2 className="text-2xl font-bold">Task 4: Capability Utilization (0.0 - 1.0 Normalized)</h2>
       </div>
@@ -1070,10 +1083,31 @@ const Footer = () => (
   </footer>
 );
 
+const TASK_DESCRIPTIONS: Record<string, string> = {
+  extraction: "Extract personalized information from user-AI dialogues, including preferences, habits, facts, and goals. The system identifies both explicit statements and implicit signals to build comprehensive user profiles.",
+  updating: "Update existing memory entries when new information conflicts with or refines previous knowledge. The system determines the appropriate update action (replace, append, delete, or no change) based on the new context.",
+  retrieval: "Retrieve relevant personalized memories given a user query. The system searches through the memory bank to find the most contextually appropriate information to inform the response.",
+  utilization: "Generate personalized responses by incorporating retrieved memories. The system evaluates how well the generated response aligns with the user's stored preferences and context.",
+};
+
+const SAMPLE_CASE_LINKS: Record<string, string> = {
+  extraction: 'https://github.com/ThisIsCosine/AlpsBench/blob/main/examples/task1/task1_dataset.jsonl',
+  updating: 'https://github.com/ThisIsCosine/AlpsBench/blob/main/examples/task2/task2_dataset.jsonl',
+  retrieval: 'https://github.com/ThisIsCosine/AlpsBench/blob/main/examples/task3/task3_dataset_d100.jsonl',
+  utilization: 'https://github.com/ThisIsCosine/AlpsBench/tree/main/examples/task4',
+};
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('about');
+  const [showAboutOverview, setShowAboutOverview] = useState(false);
+  const [aboutActiveTask, setAboutActiveTask] = useState<'extraction' | 'updating' | 'retrieval' | 'utilization'>('extraction');
+
+  useEffect(() => {
+    if (activeTab !== 'about') setShowAboutOverview(false);
+  }, [activeTab]);
 
   const tabs = [
+    { id: 'about', name: 'Benchmark Introduction', icon: Info },
     { id: 'overview', name: 'Overview', icon: BarChart3 },
     { id: 'task1', name: 'Task 1 (Extraction)', icon: BarChart3 },
     { id: 'task2', name: 'Task 2 (Updating)', icon: Layers },
@@ -1082,7 +1116,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-900 selection:bg-blue-100 selection:text-blue-700 dark:text-white dark:selection:bg-blue-900 dark:selection:text-blue-200">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-900 selection:bg-blue-100/60 selection:text-blue-700 dark:text-white dark:selection:bg-blue-900/50 dark:selection:text-blue-200">
       <Header />
       <main className="pb-24 pt-12">
         <div className="mx-auto w-[90%] px-6">
@@ -1133,6 +1167,102 @@ export default function App() {
                   {activeTab === 'task2' && <Task2Chart data={BENCHMARK_DATA} />}
                   {activeTab === 'task3' && <Task3Chart data={BENCHMARK_DATA} />}
                   {activeTab === 'task4' && <Task4Chart data={BENCHMARK_DATA} />}
+                  {activeTab === 'about' && (
+                    showAboutOverview ? (
+                      <AllTasksOverview onBack={() => setShowAboutOverview(false)} />
+                    ) : (
+                      <div className="space-y-10">
+                        <section>
+                          <div className="mb-6 flex items-center gap-3 text-white">
+                            <Info className="h-7 w-7 text-blue-500" />
+                            <h2 className="text-3xl font-bold">Benchmark Introduction</h2>
+                          </div>
+                          <p className="mb-8 text-base text-slate-300 leading-relaxed">
+                            AlpsBench is a comprehensive LLM personalization benchmark derived from real-world human-LLM dialogues.
+                            Built on 2,500 interaction sequences from WildChat with human-verified memories, it evaluates four core tasks
+                            (Extraction, Updating, Retrieval, Utilization) across five dimensions: Persona Awareness, Preference Following,
+                            Virtual-Reality Awareness, Consistency/Factuality, and Emotional Intelligence.
+                          </p>
+                          <DataPipelineFlow onOverviewClick={() => setShowAboutOverview(true)} />
+                        </section>
+                        <section>
+                          <div className="mb-6 flex items-center gap-3 text-white">
+                            <Layers className="h-7 w-7 text-purple-500" />
+                            <h2 className="text-3xl font-bold">Task Demos & Methodology</h2>
+                          </div>
+                          <p className="mb-6 text-base text-slate-300 leading-relaxed">
+                            Interactive demonstrations and evaluation methodology for each task.
+                          </p>
+                          {/* Task Switcher - Large buttons for obvious switching */}
+                          <div className="mb-8 flex flex-wrap gap-4">
+                            {(['extraction', 'updating', 'retrieval', 'utilization'] as const).map((taskId, idx) => (
+                              <button
+                                key={taskId}
+                                onClick={() => setAboutActiveTask(taskId)}
+                                className={`flex items-center gap-3 rounded-2xl px-8 py-4 text-base font-bold transition-all min-w-[180px] justify-center ${
+                                  aboutActiveTask === taskId
+                                    ? 'bg-blue-500 text-white shadow-xl scale-105 ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-800'
+                                    : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50 hover:text-white hover:scale-[1.02]'
+                                }`}
+                              >
+                                <span className="text-lg">0{idx + 1}</span>
+                                <span className="capitalize text-lg">{taskId}</span>
+                              </button>
+                            ))}
+                          </div>
+                          {/* 50/50 Layout: Left = Demo, Right = Methodology + Description + Link */}
+                          <div className="rounded-2xl border-2 border-slate-600/70 bg-slate-800/70 p-6 shadow-xl overflow-hidden">
+                            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                              {/* Left: Demo Animation */}
+                              <div className="rounded-xl overflow-hidden border-2 border-slate-600 bg-slate-950 h-[500px] lg:h-[600px]">
+                                {aboutActiveTask === 'extraction' && <ExtractionDemo theme="dark" />}
+                                {aboutActiveTask === 'updating' && <UpdatingDemo theme="dark" />}
+                                {aboutActiveTask === 'retrieval' && <RetrievalDemo theme="dark" />}
+                                {aboutActiveTask === 'utilization' && <UtilizationDemo theme="dark" />}
+                              </div>
+                              {/* Right: Methodology + Task Overview + Sample Cases Link */}
+                              <div className="flex flex-col gap-6">
+                                <div className="flex-1 rounded-xl border-2 border-slate-600/50 bg-slate-800/50 overflow-hidden min-h-[280px]">
+                                  {aboutActiveTask === 'extraction' && <ExtractionMethodology />}
+                                  {aboutActiveTask === 'updating' && <UpdatingMethodology />}
+                                  {aboutActiveTask === 'retrieval' && <RetrievalMethodology />}
+                                  {aboutActiveTask === 'utilization' && <UtilizationMethodology />}
+                                </div>
+                                <div className="rounded-xl border-2 border-slate-600/50 bg-slate-800/50 p-6">
+                                  <h3 className="font-bold text-base text-white mb-2">Task Overview</h3>
+                                  <p className="text-sm text-slate-300 leading-relaxed mb-4">
+                                    {TASK_DESCRIPTIONS[aboutActiveTask]}
+                                  </p>
+                                  <div className="flex flex-wrap gap-3">
+                                    <a
+                                      href={SAMPLE_CASE_LINKS[aboutActiveTask]}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105"
+                                    >
+                                      <span>📄</span>
+                                      <span>View Sample Cases</span>
+                                      <span className="text-xs opacity-80">→</span>
+                                    </a>
+                                    <a
+                                      href="https://github.com/ThisIsCosine/AlpsBench"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-2 bg-slate-600 hover:bg-slate-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 border border-slate-500"
+                                    >
+                                      <span>📤</span>
+                                      <span>Submit to Benchmark</span>
+                                      <span className="text-xs opacity-80">→</span>
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </section>
+                      </div>
+                    )
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>
