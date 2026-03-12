@@ -158,14 +158,16 @@ export const DataPipelineFlow: React.FC<DataPipelineFlowProps> = ({ onOverviewCl
               <span>Code</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
-            <button
-              disabled
-              className="flex items-center justify-center gap-2 bg-slate-800/50 border border-slate-700 text-slate-500 px-4 py-2.5 rounded-lg text-sm font-semibold cursor-not-allowed"
-              title="Paper coming soon"
+            <a
+              href="https://github.com/ThisIsCosine/AlpsBench/blob/main/paper/PersonalizationBench__Arxiv.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200"
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>Paper (Coming Soon)</span>
-            </button>
+              <span>Paper</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
         </div>
       </div>
