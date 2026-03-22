@@ -45,7 +45,7 @@ import {
   UtilizationMethodology,
 } from './components/about';
 import { 
-  BENCHMARK_DATA, 
+  loadBenchmarkData,
   getModelColor, 
   getRankMedal, 
   getRankStyle,
@@ -55,6 +55,29 @@ import {
 } from './data/benchmark-data';
 
 // --- Components ---
+
+const DataStatusCard = ({
+  title,
+  description,
+  tone = 'info',
+}: {
+  title: string;
+  description: string;
+  tone?: 'info' | 'error';
+}) => {
+  const borderClass = tone === 'error' ? 'border-rose-500/40' : 'border-slate-700/60';
+  const iconClass = tone === 'error' ? 'text-rose-400' : 'text-blue-400';
+
+  return (
+    <div className={`rounded-2xl border bg-slate-800/70 p-8 text-center shadow-xl backdrop-blur-sm ${borderClass}`}>
+      <div className="mb-4 flex justify-center">
+        <Database className={`h-8 w-8 ${iconClass}`} />
+      </div>
+      <h3 className="text-xl font-bold text-white">{title}</h3>
+      <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">{description}</p>
+    </div>
+  );
+};
 
 const Header = () => {
   // const stats = [
@@ -454,7 +477,7 @@ const Task4Chart = ({ data, compact = false }: { data: BenchmarkData[], compact?
         <h2 className="text-2xl font-bold">Task 4: Capability Utilization (0.0 - 1.0 Normalized)</h2>
       </div>
       <p className="mb-8 text-slate-500">
-        Complex utilization capabilities across five dimensions: Persona Awareness (PA), Preference Following (PF), Virtual-Reality Awareness (VRA), Consistency/Factuality (CF), and Emotional Intelligence (EI).
+        Complex utilization capabilities across five dimensions: Persona Awareness (PA), Preference Following (PF), Virtual-Reality Awareness (VRA), Constraint Following (CF), and Emotional Intelligence (EI).
       </p>
       
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr,500px]">
@@ -592,7 +615,7 @@ const Task4Chart = ({ data, compact = false }: { data: BenchmarkData[], compact?
                     <div><strong>PA:</strong> Persona Awareness</div>
                     <div><strong>PF:</strong> Preference Following</div>
                     <div><strong>VRA:</strong> Virtual-Reality Awareness</div>
-                    <div><strong>CF:</strong> Consistency/Factuality</div>
+                    <div><strong>CF:</strong> Constraint Following</div>
                     <div><strong>EI:</strong> Emotional Intelligence</div>
                   </div>
                   <div className="mt-3 border-t border-slate-600/50 pt-2">
@@ -936,7 +959,7 @@ const LeaderboardTable = ({ data, compact = false }: { data: BenchmarkData[], co
         <div className="rounded-lg border border-slate-600/50 bg-slate-800/50 p-4">
           <div className="mb-2 font-bold text-amber-400" style={{ fontSize: '14px' }}>Task 4: Utilization</div>
           <div className="text-xs text-slate-300 leading-relaxed">
-            <strong>PA</strong>: Persona Awareness | <strong>PF</strong>: Preference Following | <strong>VRA</strong>: Virtual-Reality Awareness | <strong>CF</strong>: Consistency/Factuality | <strong>EI</strong>: Emotional Intelligence
+            <strong>PA</strong>: Persona Awareness | <strong>PF</strong>: Preference Following | <strong>VRA</strong>: Virtual-Reality Awareness | <strong>CF</strong>: Constraint Following | <strong>EI</strong>: Emotional Intelligence
           </div>
         </div>
         <div className="rounded-lg border border-slate-600/50 bg-slate-800/50 p-4">
@@ -1101,10 +1124,67 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('about');
   const [showAboutOverview, setShowAboutOverview] = useState(false);
   const [aboutActiveTask, setAboutActiveTask] = useState<'extraction' | 'updating' | 'retrieval' | 'utilization'>('extraction');
+  const [benchmarkData, setBenchmarkData] = useState<BenchmarkData[]>([]);
+  const [isBenchmarkDataLoading, setIsBenchmarkDataLoading] = useState(true);
+  const [benchmarkDataError, setBenchmarkDataError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const run = async () => {
+      try {
+        setIsBenchmarkDataLoading(true);
+        setBenchmarkDataError(null);
+        const loadedData = await loadBenchmarkData();
+
+        if (!isCancelled) {
+          setBenchmarkData(loadedData);
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          const message = error instanceof Error ? error.message : 'Unknown benchmark data loading error';
+          setBenchmarkDataError(message);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsBenchmarkDataLoading(false);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (activeTab !== 'about') setShowAboutOverview(false);
   }, [activeTab]);
+
+  const renderBenchmarkDataView = (content: React.ReactNode) => {
+    if (isBenchmarkDataLoading) {
+      return (
+        <DataStatusCard
+          title="Loading benchmark data"
+          description="Reading the benchmark CSV files from the shared data directory."
+        />
+      );
+    }
+
+    if (benchmarkDataError) {
+      return (
+        <DataStatusCard
+          title="Benchmark data failed to load"
+          description={benchmarkDataError}
+          tone="error"
+        />
+      );
+    }
+
+    return content;
+  };
 
   const tabs = [
     { id: 'about', name: 'Benchmark Introduction', icon: Info },
@@ -1150,23 +1230,25 @@ export default function App() {
                   transition={{ duration: 0.3 }}
                 >
                   {activeTab === 'overview' && (
+                    renderBenchmarkDataView(
                     <div className="space-y-8">
                       {/* 2x2 Grid for 4 Tasks - Each Task has chart+leaderboard internally */}
                       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                        <Task1Chart data={BENCHMARK_DATA} />
-                        <Task2Chart data={BENCHMARK_DATA} />
-                        <Task3Chart data={BENCHMARK_DATA} />
-                        <Task4Chart data={BENCHMARK_DATA} compact />
+                        <Task1Chart data={benchmarkData} />
+                        <Task2Chart data={benchmarkData} />
+                        <Task3Chart data={benchmarkData} />
+                        <Task4Chart data={benchmarkData} compact />
                       </div>
                       
                       {/* Overall Comprehensive Table at bottom */}
-                      <LeaderboardTable data={BENCHMARK_DATA} />
+                      <LeaderboardTable data={benchmarkData} />
                     </div>
+                    )
                   )}
-                  {activeTab === 'task1' && <Task1Chart data={BENCHMARK_DATA} />}
-                  {activeTab === 'task2' && <Task2Chart data={BENCHMARK_DATA} />}
-                  {activeTab === 'task3' && <Task3Chart data={BENCHMARK_DATA} />}
-                  {activeTab === 'task4' && <Task4Chart data={BENCHMARK_DATA} />}
+                  {activeTab === 'task1' && renderBenchmarkDataView(<Task1Chart data={benchmarkData} />)}
+                  {activeTab === 'task2' && renderBenchmarkDataView(<Task2Chart data={benchmarkData} />)}
+                  {activeTab === 'task3' && renderBenchmarkDataView(<Task3Chart data={benchmarkData} />)}
+                  {activeTab === 'task4' && renderBenchmarkDataView(<Task4Chart data={benchmarkData} />)}
                   {activeTab === 'about' && (
                     showAboutOverview ? (
                       <AllTasksOverview onBack={() => setShowAboutOverview(false)} />
@@ -1181,7 +1263,7 @@ export default function App() {
                             AlpsBench is a comprehensive LLM personalization benchmark derived from real-world human-LLM dialogues.
                             Built on 2,500 interaction sequences from WildChat with human-verified memories, it evaluates four core tasks
                             (Extraction, Updating, Retrieval, Utilization) across five dimensions: Persona Awareness, Preference Following,
-                            Virtual-Reality Awareness, Consistency/Factuality, and Emotional Intelligence.
+                            Virtual-Reality Awareness, Constraint Following, and Emotional Intelligence.
                           </p>
                           <DataPipelineFlow onOverviewClick={() => setShowAboutOverview(true)} />
                         </section>
@@ -1280,7 +1362,7 @@ export default function App() {
             <p className="mx-auto max-w-4xl text-center text-sm leading-relaxed text-slate-400">
               <strong className="text-white">AlpsBench</strong> is a comprehensive LLM personalization benchmark derived from <strong className="text-blue-400">real-world human-LLM dialogues</strong>. 
               Built on 2,500 interaction sequences from WildChat with human-verified memories, it evaluates four core tasks (Extraction, Updating, Retrieval, Utilization) 
-              across five dimensions: Persona Awareness, Preference Following, Virtual-Reality Awareness, Consistency/Factuality, and Emotional Intelligence.
+              across five dimensions: Persona Awareness, Preference Following, Virtual-Reality Awareness, Constraint Following, and Emotional Intelligence.
             </p>
           </div>
         </section>

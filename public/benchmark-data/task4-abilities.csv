@@ -1,0 +1,7 @@
+Group,Metric,GPT-5.2,GPT-4.1-mini,DeepSeek Reasoner,gemini-3-flash-preview,llama-4-maverick,claude-sonnet-4-5-20250929,Qwen3-max
+main,Ability1,0.5702,0.4018,0.5825,0.6895,0.2684,0.5614,0.6228
+main,Ability2,0.7124,0.5045,0.6409,0.7532,0.1552,0.5933,0.6834
+main,Ability3,0.7360,0.2780,0.3860,0.3520,0.8600,0.9480,0.4380
+main,Ability4,0.8960,0.7774,0.9602,0.8328,0.8720,0.9514,0.8267
+detail,Ability2 - General,0.6983,0.4995,0.6483,0.7655,0.1152,0.6045,0.6901
+detail,Ability2 - Interaction,0.7680,0.5240,0.6120,0.7052,0.3080,0.5498,0.6574
