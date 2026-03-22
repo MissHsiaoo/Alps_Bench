@@ -183,7 +183,7 @@ const loadEiScoreMap = (
     });
 
     const combinedAverage = [...englishValues, ...chineseValues].reduce((sum, value) => sum + value, 0) / 6;
-    accumulator[modelName] = roundTo(combinedAverage / 4, 4);
+    accumulator[modelName] = roundTo(combinedAverage / 5, 4);
     return accumulator;
   }, {});
 };
